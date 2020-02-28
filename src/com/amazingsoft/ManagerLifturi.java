@@ -23,21 +23,22 @@ public class ManagerLifturi implements CallElevator {
 
     @Override
     public void callElevator(int etajCurent) {
+        System.out.println("\n ==== Pozitia initiala a lifturilor =====");
         int count = nrEtaje;
         Lift liftApropiat = null;
         for (Lift lift : listaLift) {
             int diferentaEtaje = Math.abs(etajCurent - lift.getEtajCurent());
-            System.out.println("Liftul este la etajul " + lift.getEtajCurent());
-            if (diferentaEtaje < count && diferentaEtaje != count) {
+            System.out.println("Liftul "+ lift.getId() +" este la etajul " + lift.getEtajCurent());
+            if (diferentaEtaje < count) {
                 count = diferentaEtaje;
                 liftApropiat = lift;
             }
         }
-        if (!liftApropiat.isInMiscare()) {
-            ElevatorThread elevatorEvent = new ElevatorThread(liftApropiat, etajCurent); //etaj destinatie
-            elevatorEvent.();
-        }
-        System.out.println("Cel mai apropiat lift este " + liftApropiat);
+        System.out.println("Cel mai apropiat lift de etajul " + etajCurent + " este " + liftApropiat);
+
+        Thread elevatorThread = new Thread(new ElevatorThread(liftApropiat, etajCurent)); //etaj destinatie
+        elevatorThread.start();
+
     }
 
 }

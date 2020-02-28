@@ -19,6 +19,10 @@ public class Lift{
         return etajCurent;
     }
 
+    public void setEtajCurent(int etajCurent) {
+        this.etajCurent = etajCurent;
+    }
+
     public boolean isInMiscare() {
         return inMiscare;
     }
@@ -29,7 +33,7 @@ public class Lift{
 
     @Override
     public String toString() {
-        return "Liftul cu id " + id + " care se afla acum la etajul " + etajCurent;
+        return "liftul cu id " + id + " care se afla acum la etajul " + etajCurent;
     }
 
 }
