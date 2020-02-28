@@ -36,8 +36,12 @@ public class ManagerLifturi implements CallElevator {
         }
         System.out.println("Cel mai apropiat lift de etajul " + etajCurent + " este " + liftApropiat);
 
-        Thread elevatorThread = new Thread(new ElevatorThread(liftApropiat, etajCurent)); //etaj destinatie
-        elevatorThread.start();
+        if(!liftApropiat.isInMiscare()) {
+            Thread elevatorThread = new Thread(new ElevatorThread(liftApropiat, etajCurent)); //etaj destinatie
+            elevatorThread.start();
+        } else {
+            System.out.println("Liftul este deja in miscare");
+        }
 
     }
 
