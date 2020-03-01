@@ -2,33 +2,24 @@ package com.amazingsoft;
 
 public class ElevatorThread implements Runnable {
     private Lift lift;
-    private int etajDestinatie;
 
-    public ElevatorThread(Lift lift, int etajDestinatie) {
+    public ElevatorThread(Lift lift) {
         this.lift = lift;
-        this.etajDestinatie = etajDestinatie;
     }
 
     @Override
     public void run() {
-        lift.setInMiscare(true);
-//        int etajeDiferenta = Math.abs(lift.getEtajCurent() - etajDestinatie);
-        if(lift.getEtajCurent() < etajDestinatie){
-            for (int i = lift.getEtajCurent()+1; i <= etajDestinatie; i++) {
-                System.out.println("Liftul " + lift.getId() + " a urcat la etajul " + i);
-            }
-        } else if (lift.getEtajCurent() > etajDestinatie){
-            for (int i = lift.getEtajCurent()-1; i >= etajDestinatie; i--) {
-                System.out.println("Liftul " + lift.getId() + " coboara la etajul " + i);
-            }
-        } else {
-            System.out.println("Liftul este deja la etajul " + etajDestinatie);
+        System.out.println(this.toString());
+        if(lift.getEtajCurent() < lift.getEtajDestinatie()){
+            lift.urca();
+        } else if (lift.getEtajCurent() > lift.getEtajDestinatie()){
+            lift.coboara();
+        } else{
+            lift.pozitie();
         }
-
-        lift.setEtajCurent(etajDestinatie);
-        System.out.println("Liftul a ajuns la etajul " + etajDestinatie);
-        lift.setInMiscare(false);
     }
+
+
 }
 
 

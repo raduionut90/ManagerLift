@@ -1,5 +1,6 @@
 package com.amazingsoft;
 
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,10 +12,10 @@ public class ManagerLifturi implements CallElevator {
     public ManagerLifturi(int nrEtaje, int nrLifturi) {
         this.nrEtaje = nrEtaje;
         this.nrLifturi = nrLifturi;
-        creazaLifturi(nrLifturi);
+        creazaLifturi();
     }
 
-    private void creazaLifturi(int nr) {
+    private void creazaLifturi() {
         for (int i = 0; i < nrLifturi; i++) {
             int etaj = (int) (Math.random() * nrEtaje + 1);
             listaLift.add(new Lift(i, etaj));
@@ -22,27 +23,69 @@ public class ManagerLifturi implements CallElevator {
     }
 
     @Override
-    public void callElevator(int etajCurent) {
-        System.out.println("\n ==== Pozitia initiala a lifturilor =====");
-        int count = nrEtaje;
-        Lift liftApropiat = null;
-        for (Lift lift : listaLift) {
-            int diferentaEtaje = Math.abs(etajCurent - lift.getEtajCurent());
-            System.out.println("Liftul "+ lift.getId() +" este la etajul " + lift.getEtajCurent());
-            if (diferentaEtaje < count) {
-                count = diferentaEtaje;
-                liftApropiat = lift;
-            }
-        }
-        System.out.println("Cel mai apropiat lift de etajul " + etajCurent + " este " + liftApropiat);
+    public synchronized void callElevator(int etajDestinatie) {
 
-        if(!liftApropiat.isInMiscare()) {
-            Thread elevatorThread = new Thread(new ElevatorThread(liftApropiat, etajCurent)); //etaj destinatie
-            elevatorThread.start();
-        } else {
-            System.out.println("Liftul este deja in miscare");
+        Thread elevatorThread = new Thread(new ElevatorThread(cautaLift(etajDestinatie)));
+        elevatorThread.start();
+        if (!elevatorThread.isAlive()){
+            notify();
+            System.out.println("notific");
         }
-
     }
 
+    public synchronized Lift cautaLift(int etajDestinatie) {
+        System.out.println("\n Se cauta un lift pentru a merge la etajul " + etajDestinatie);
+        System.out.println("==== Pozitia lifturilor =====");
+        int count = nrEtaje;
+        Lift liftApropiat = null;
+        while(liftApropiat==null) {
+            for (Lift lift : listaLift) {
+                System.out.println("Liftul " + lift.getId() + " este la etajul " + lift.getEtajCurent() + " inMiscare?" + lift.isInMiscare());
+                int diferentaEtaje = Math.abs(etajDestinatie - lift.getEtajCurent());
+                if (!lift.isInMiscare() && diferentaEtaje < count) {
+                    count = diferentaEtaje;
+                    liftApropiat = lift;
+                    System.out.println("am gasit ceva");
+                }
+            }
+            if (liftApropiat==null){
+                try {
+                    wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        if (liftApropiat != null) {
+            liftApropiat.setEtajDestinatie(etajDestinatie);
+            System.out.println("A fost ales liftul " + liftApropiat + " sa mearga la etajul " + etajDestinatie);
+            notify();
+        }
+        return liftApropiat;
+    }
+
+
+    public int getNrEtaje() {
+        return nrEtaje;
+    }
+
+    public void setNrEtaje(int nrEtaje) {
+        this.nrEtaje = nrEtaje;
+    }
+
+    public int getNrLifturi() {
+        return nrLifturi;
+    }
+
+    public void setNrLifturi(int nrLifturi) {
+        this.nrLifturi = nrLifturi;
+    }
+
+    public List<Lift> getListaLift() {
+        return listaLift;
+    }
+
+    public void setListaLift(List<Lift> listaLift) {
+        this.listaLift = listaLift;
+    }
 }
