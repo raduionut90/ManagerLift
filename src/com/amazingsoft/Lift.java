@@ -24,60 +24,62 @@ public class Lift {
         this.etajCurent = etajCurent;
     }
 
-    protected void urca() {
+    protected void urca(ManagerLifturi managerLifturi) {
         for (int i = etajCurent + 1; i <= etajDestinatie; i++) {
-            System.out.println("Liftul " + getId() + " a urcat la etajul " + i);
+            System.out.println(Thread.currentThread().getName() + " Liftul " + getId() + " a urcat la etajul " + i);
             this.setEtajCurent(i);
-//            try {
-//                Thread.sleep(300);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
-
-        System.out.println("Am terminat de urcat");
+        System.out.println(Thread.currentThread().getName() + " Lift " + getId() + " am terminat taskul, sunt disponibil");
         setInMiscare(false);
+        managerLifturi.liftLiber(); //notific ca a devenit lift disponibil
     }
 
-    protected void coboara() {
+    protected void coboara(ManagerLifturi managerLifturi) {
         for (int i = etajCurent - 1; i >= etajDestinatie; i--) {
-            System.out.println("Liftul " + getId() + " coboara la etajul " + i);
+            System.out.println(Thread.currentThread().getName() + " Liftul " + getId() + " coboara la etajul " + i);
             this.setEtajCurent(i);
-//            try {
-//                Thread.sleep(300);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
-        System.out.println("Am terminat de coborat");
+        System.out.println(Thread.currentThread().getName() + " Lift " + getId() + " am terminat taskul, sunt disponibil");
         setInMiscare(false);
+        managerLifturi.liftLiber();
     }
 
-    public synchronized void pozitie(){
-        if (etajCurent == etajDestinatie){
-            System.out.println(this + " sunt la etajul " + etajDestinatie);
+    public synchronized void pozitie(ManagerLifturi managerLifturi) {
+        if (etajCurent == etajDestinatie) {
+            System.out.println("Lift " + getId() + " sunt la etajul " + etajDestinatie);
         }
+        managerLifturi.liftLiber();
     }
 
-    public boolean isInMiscare () {
+    public boolean isInMiscare() {
         return inMiscare;
     }
 
-    public void setInMiscare ( boolean inMiscare){
+    public void setInMiscare(boolean inMiscare) {
         this.inMiscare = inMiscare;
     }
 
-    public int getEtajDestinatie () {
+    public int getEtajDestinatie() {
         return etajDestinatie;
     }
 
-    public void setEtajDestinatie ( int etajDestinatie){
+    public void setEtajDestinatie(int etajDestinatie) {
         this.etajDestinatie = etajDestinatie;
     }
 
     @Override
-    public String toString () {
-        return "liftul cu id " + id + " care se afla acum la etajul " + etajCurent;
+    public String toString() {
+        return "lift " + id + " care se afla acum la etajul " + etajCurent;
     }
 
 }

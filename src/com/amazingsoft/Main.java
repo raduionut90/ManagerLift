@@ -7,25 +7,25 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
 
-        ManagerLifturi managerLifturi = new ManagerLifturi(1000, 5);
-        managerLifturi.callElevator(700);
-        managerLifturi.callElevator(900);
-        managerLifturi.callElevator(744);
-        managerLifturi.callElevator(422);
+        ManagerLifturi managerLifturi = new ManagerLifturi(10, 3);
+        managerLifturi.callElevator(7);
+        managerLifturi.callElevator(9);
+        managerLifturi.callElevator(7);
+        managerLifturi.callElevator(4);
         managerLifturi.callElevator(9);
         managerLifturi.callElevator(3);
-        managerLifturi.callElevator(70);
-        managerLifturi.callElevator(900);
-        managerLifturi.callElevator(144);
-        managerLifturi.callElevator(40);
+        managerLifturi.callElevator(7);
         managerLifturi.callElevator(9);
-        managerLifturi.callElevator(300);
-        managerLifturi.callElevator(944);
         managerLifturi.callElevator(1);
-        managerLifturi.callElevator(444);
+        managerLifturi.callElevator(4);
+        managerLifturi.callElevator(9);
+        managerLifturi.callElevator(3);
+        managerLifturi.callElevator(9);
+        managerLifturi.callElevator(1);
+        managerLifturi.callElevator(8);
         managerLifturi.callElevator(5);
         managerLifturi.callElevator(3);
-        System.out.println("Functioneaza");
+        System.err.println("Am terminat toate task-urile");
 
     }
 }

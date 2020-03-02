@@ -24,68 +24,51 @@ public class ManagerLifturi implements CallElevator {
 
     @Override
     public synchronized void callElevator(int etajDestinatie) {
-
-        Thread elevatorThread = new Thread(new ElevatorThread(cautaLift(etajDestinatie)));
+        Thread elevatorThread = new Thread(new ElevatorThread(cautaLift(etajDestinatie), this));
         elevatorThread.start();
-        if (!elevatorThread.isAlive()){
-            notify();
-            System.out.println("notific");
-        }
     }
 
     public synchronized Lift cautaLift(int etajDestinatie) {
-        System.out.println("\n Se cauta un lift pentru a merge la etajul " + etajDestinatie);
-        System.out.println("==== Pozitia lifturilor =====");
+        System.out.println("\nThread-ul " + Thread.currentThread().getName() + " cauta un lift pentru a merge la etajul " + etajDestinatie);
         int count = nrEtaje;
         Lift liftApropiat = null;
-        while(liftApropiat==null) {
-            for (Lift lift : listaLift) {
-                System.out.println("Liftul " + lift.getId() + " este la etajul " + lift.getEtajCurent() + " inMiscare?" + lift.isInMiscare());
-                int diferentaEtaje = Math.abs(etajDestinatie - lift.getEtajCurent());
-                if (!lift.isInMiscare() && diferentaEtaje < count) {
-                    count = diferentaEtaje;
-                    liftApropiat = lift;
-                    System.out.println("am gasit ceva");
-                }
-            }
-            if (liftApropiat==null){
-                try {
-                    wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+        while (!esteLiftDisponibil()) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
-        if (liftApropiat != null) {
-            liftApropiat.setEtajDestinatie(etajDestinatie);
-            System.out.println("A fost ales liftul " + liftApropiat + " sa mearga la etajul " + etajDestinatie);
-            notify();
+        for (Lift lift : listaLift) {
+            int diferentaEtaje = Math.abs(etajDestinatie - lift.getEtajCurent());
+            if (!lift.isInMiscare() && diferentaEtaje < count) {
+                count = diferentaEtaje;
+                liftApropiat = lift;
+            }
         }
+        liftApropiat.setInMiscare(true);
+        liftApropiat.setEtajDestinatie(etajDestinatie);
+        System.out.println("A fost ales " + liftApropiat + " sa mearga la etajul " + etajDestinatie);
+
         return liftApropiat;
     }
 
-
-    public int getNrEtaje() {
-        return nrEtaje;
+    public synchronized boolean esteLiftDisponibil() {
+        boolean is = false;
+        for (Lift lift : listaLift) {
+            System.out.println("Liftul " + lift.getId() + " este la etajul " + lift.getEtajCurent() + " inMiscare ? " + lift.isInMiscare());
+            if (!lift.isInMiscare()) {
+                is = true;
+            }
+        }
+        if (is == false) {
+            System.err.println(Thread.currentThread().getName() + " Nu este nici un lift disponibil, asteptam sa se elibereze unul");
+        }
+        return is;
     }
 
-    public void setNrEtaje(int nrEtaje) {
-        this.nrEtaje = nrEtaje;
+    public synchronized void liftLiber() {
+        notify();        //
     }
 
-    public int getNrLifturi() {
-        return nrLifturi;
-    }
-
-    public void setNrLifturi(int nrLifturi) {
-        this.nrLifturi = nrLifturi;
-    }
-
-    public List<Lift> getListaLift() {
-        return listaLift;
-    }
-
-    public void setListaLift(List<Lift> listaLift) {
-        this.listaLift = listaLift;
-    }
 }
